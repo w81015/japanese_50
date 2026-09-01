@@ -451,6 +451,7 @@ var KVG={"あ":["M31.01,33c0.88,0.88,2.75,1.82,5.25,1.75c8.62-0.25,20-2.12,29.5-
   document.querySelectorAll('.zin').forEach(function(inp){
     inp.addEventListener('change',function(){
       var v=inp.nextElementSibling;
+      v.querySelectorAll('.show').forEach(function(e){ e.classList.remove('show'); });
       if(inp.checked){ play(v); if(auto) speak(v.getAttribute('data-k'),true); }
     });
   });
