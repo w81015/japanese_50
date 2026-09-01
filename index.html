@@ -154,6 +154,23 @@ body.js p.jsonly{display:block;}
   font-family:-apple-system,"Helvetica Neue",sans-serif;}
 .wmean{font-size:clamp(14px,1.8vw,20px);color:var(--ink);}
 .wen{font-size:clamp(11px,1.4vw,15px);color:var(--muted);}
+/* 數字頁 */
+.ngrid{display:flex;flex-wrap:wrap;gap:clamp(6px,.9vw,12px);margin-bottom:14px;}
+.ncard{flex:1 1 clamp(110px,13%,160px);background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:12px 10px;text-align:center;}
+.ngrid.wide .ncard{flex:1 1 clamp(150px,20%,240px);}
+.nnum{font-size:clamp(20px,2.6vw,30px);font-weight:700;color:var(--ink);}
+.nkana{font-size:clamp(15px,1.9vw,21px);margin-top:4px;}
+.nrom{font-size:clamp(11px,1.3vw,14px);color:var(--accent);font-weight:600;letter-spacing:.04em;
+  font-family:-apple-system,"Helvetica Neue",sans-serif;margin-top:2px;}
+.nkj{font-size:clamp(11px,1.3vw,14px);color:var(--muted);margin-top:4px;}
+.ncard2{width:clamp(200px,32vw,340px);height:clamp(160px,24vh,210px);perspective:1000px;cursor:pointer;}
+.ncard2 .inner{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;
+  transition:transform .45s cubic-bezier(.4,.2,.2,1);}
+.ncard2.flip .inner{transform:rotateY(180deg);}
+.ncard2 .face{flex-direction:column;gap:6px;padding:12px;}
+.nbig{font-size:clamp(34px,5vw,58px);font-weight:700;}
+.nans{font-size:clamp(20px,2.8vw,32px);font-weight:500;}
 /* 句型頁 */
 .pat{background:var(--card);border:1px solid var(--line);border-radius:16px;
   padding:22px 20px;text-align:center;margin-bottom:16px;}
@@ -254,12 +271,14 @@ ruby rt{font-size:.45em;color:var(--muted);font-weight:400;}
 #t-p:checked ~ .wrap #page-p{display:block}
 #t-w:checked ~ .wrap #page-w{display:block}
 #t-s:checked ~ .wrap #page-s{display:block}
+#t-n:checked ~ .wrap #page-n{display:block}
 #t-h:checked ~ .wrap label[for=t-h],
 #t-k:checked ~ .wrap label[for=t-k],
 #t-q:checked ~ .wrap label[for=t-q],
 #t-p:checked ~ .wrap label[for=t-p],
 #t-w:checked ~ .wrap label[for=t-w],
-#t-s:checked ~ .wrap label[for=t-s]{background:var(--card);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.10)}
+#t-s:checked ~ .wrap label[for=t-s],
+#t-n:checked ~ .wrap label[for=t-n]{background:var(--card);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.10)}
 #t-q:checked ~ .wrap #hint-q{display:block}
 #t-q:checked ~ .wrap #hint-w{display:none}
 #t-p:checked ~ .wrap #hint-w{display:none}
@@ -267,6 +286,10 @@ ruby rt{font-size:.45em;color:var(--muted);font-weight:400;}
 #t-p:checked ~ .wrap{--accent:#2f8f6f;--accent-soft:#e8f4ef}
 #t-w:checked ~ .wrap{--accent:#b8562f;--accent-soft:#fbeee7}
 #t-s:checked ~ .wrap{--accent:#8a5bb8;--accent-soft:#f2ecf9}
+#t-n:checked ~ .wrap{--accent:#2f7f8f;--accent-soft:#e6f2f4}
+#t-n:checked ~ .wrap #hint-w{display:none}
+#t-n:checked ~ .wrap #hint-q{display:none}
+#t-n:checked ~ .wrap #hint-x{display:none}
 #t-s:checked ~ .wrap #hint-w{display:none}
 #t-s:checked ~ .wrap #hint-q{display:none}
 #t-s:checked ~ .wrap #hint-x{display:none}
@@ -287,6 +310,13 @@ ruby rt{font-size:.45em;color:var(--muted);font-weight:400;}
 #wk-k:checked ~ .wrap label[for=wk-k],
 #wf-k:checked ~ .wrap label[for=wf-k],
 #wf-r:checked ~ .wrap label[for=wf-r],
+#nr-1:checked ~ .wrap label[for=nr-1]{background:var(--accent);border-color:var(--accent);color:#fff}
+#nr-2:checked ~ .wrap label[for=nr-2]{background:var(--accent);border-color:var(--accent);color:#fff}
+#nr-3:checked ~ .wrap label[for=nr-3]{background:var(--accent);border-color:var(--accent);color:#fff}
+#nr-4:checked ~ .wrap label[for=nr-4]{background:var(--accent);border-color:var(--accent);color:#fff}
+#nr-5:checked ~ .wrap label[for=nr-5]{background:var(--accent);border-color:var(--accent);color:#fff}
+#nf-n:checked ~ .wrap label[for=nf-n],
+#nf-k:checked ~ .wrap label[for=nf-k],
 #sm-a:checked ~ .wrap label[for=sm-a],
 #sm-j:checked ~ .wrap label[for=sm-j],
 #sk-h:checked ~ .wrap label[for=sk-h],
@@ -456,7 +486,7 @@ ruby rt{font-size:.45em;color:var(--muted);font-weight:400;}
 </style>
 </head>
 <body>
-<input type="radio" name="tab" id="t-h" class="hid" checked><input type="radio" name="tab" id="t-k" class="hid"><input type="radio" name="tab" id="t-q" class="hid"><input type="radio" name="tab" id="t-p" class="hid"><input type="radio" name="tab" id="t-w" class="hid"><input type="radio" name="tab" id="t-s" class="hid"><input type="radio" name="sk" id="sk-h" class="hid" checked><input type="radio" name="sk" id="sk-k" class="hid"><input type="checkbox" id="ss-c0" class="hid"><input type="checkbox" id="ss-c1" class="hid" checked><input type="checkbox" id="ss-c2" class="hid"><input type="checkbox" id="ss-c3" class="hid"><input type="checkbox" id="ss-c4" class="hid"><input type="checkbox" id="ss-c5" class="hid"><input type="checkbox" id="ss-c6" class="hid"><input type="checkbox" id="ss-c7" class="hid"><input type="checkbox" id="ss-c8" class="hid"><input type="checkbox" id="ss-c9" class="hid"><input type="checkbox" id="ss-c10" class="hid"><input type="checkbox" id="ss-d0" class="hid"><input type="checkbox" id="ss-d1" class="hid"><input type="checkbox" id="ss-d2" class="hid"><input type="checkbox" id="ss-d3" class="hid"><input type="checkbox" id="ss-d4" class="hid"><input type="checkbox" id="ss-y0" class="hid"><input type="checkbox" id="ss-y1" class="hid"><input type="checkbox" id="ss-y2" class="hid"><input type="checkbox" id="ss-y3" class="hid"><input type="checkbox" id="ss-y4" class="hid"><input type="checkbox" id="ss-y5" class="hid"><input type="checkbox" id="ss-y6" class="hid"><input type="checkbox" id="ss-y7" class="hid"><input type="checkbox" id="ss-y8" class="hid"><input type="checkbox" id="ss-y9" class="hid"><input type="checkbox" id="ss-y10" class="hid"><input type="checkbox" id="ss-r0" class="hid"><input type="checkbox" id="ss-r1" class="hid"><input type="checkbox" id="ss-r2" class="hid"><input type="checkbox" id="ss-r3" class="hid"><input type="checkbox" id="ss-r4" class="hid"><input type="radio" name="sm" id="sm-a" class="hid" checked><input type="radio" name="sm" id="sm-j" class="hid"><input type="radio" name="qk" id="qk-h" class="hid" checked><input type="radio" name="qk" id="qk-k" class="hid"><input type="checkbox" id="qs-c0" class="hid"><input type="checkbox" id="qs-c1" class="hid" checked><input type="checkbox" id="qs-c2" class="hid"><input type="checkbox" id="qs-c3" class="hid"><input type="checkbox" id="qs-c4" class="hid"><input type="checkbox" id="qs-c5" class="hid"><input type="checkbox" id="qs-c6" class="hid"><input type="checkbox" id="qs-c7" class="hid"><input type="checkbox" id="qs-c8" class="hid"><input type="checkbox" id="qs-c9" class="hid"><input type="checkbox" id="qs-c10" class="hid"><input type="checkbox" id="qs-c11" class="hid"><input type="checkbox" id="qs-c12" class="hid"><input type="checkbox" id="qs-c13" class="hid"><input type="checkbox" id="qs-c14" class="hid"><input type="checkbox" id="qs-c15" class="hid"><input type="checkbox" id="qs-r0" class="hid"><input type="checkbox" id="qs-r1" class="hid"><input type="checkbox" id="qs-r2" class="hid"><input type="checkbox" id="qs-r3" class="hid"><input type="checkbox" id="qs-r4" class="hid"><input type="radio" name="wk" id="wk-h" class="hid" checked><input type="radio" name="wk" id="wk-k" class="hid"><input type="checkbox" id="ws-c0" class="hid"><input type="checkbox" id="ws-c1" class="hid" checked><input type="checkbox" id="ws-c2" class="hid"><input type="checkbox" id="ws-c3" class="hid"><input type="checkbox" id="ws-c4" class="hid"><input type="checkbox" id="ws-c5" class="hid"><input type="checkbox" id="ws-c6" class="hid"><input type="checkbox" id="ws-c7" class="hid"><input type="checkbox" id="ws-c8" class="hid"><input type="checkbox" id="ws-c9" class="hid"><input type="checkbox" id="ws-c10" class="hid"><input type="checkbox" id="ws-d0" class="hid"><input type="checkbox" id="ws-d1" class="hid"><input type="checkbox" id="ws-d2" class="hid"><input type="checkbox" id="ws-d3" class="hid"><input type="checkbox" id="ws-d4" class="hid"><input type="checkbox" id="ws-y0" class="hid"><input type="checkbox" id="ws-y1" class="hid"><input type="checkbox" id="ws-y2" class="hid"><input type="checkbox" id="ws-y3" class="hid"><input type="checkbox" id="ws-y4" class="hid"><input type="checkbox" id="ws-y5" class="hid"><input type="checkbox" id="ws-y6" class="hid"><input type="checkbox" id="ws-y7" class="hid"><input type="checkbox" id="ws-y8" class="hid"><input type="checkbox" id="ws-y9" class="hid"><input type="checkbox" id="ws-y10" class="hid"><input type="checkbox" id="ws-r0" class="hid"><input type="checkbox" id="ws-r1" class="hid"><input type="checkbox" id="ws-r2" class="hid"><input type="checkbox" id="ws-r3" class="hid"><input type="checkbox" id="ws-r4" class="hid"><input type="radio" name="wf" id="wf-k" class="hid" checked><input type="radio" name="wf" id="wf-r" class="hid"><input type="radio" name="wo" id="wo-n" class="hid" checked><input type="radio" name="wo" id="wo-v" class="hid"><input type="radio" name="wm" id="wm-a" class="hid" checked><input type="radio" name="wm" id="wm-j" class="hid"><input type="radio" name="qf" id="qf-k" class="hid" checked><input type="radio" name="qf" id="qf-r" class="hid"><input type="radio" name="qo" id="qo-n" class="hid" checked><input type="radio" name="qo" id="qo-v" class="hid">
+<input type="radio" name="tab" id="t-h" class="hid" checked><input type="radio" name="tab" id="t-k" class="hid"><input type="radio" name="tab" id="t-q" class="hid"><input type="radio" name="tab" id="t-p" class="hid"><input type="radio" name="tab" id="t-w" class="hid"><input type="radio" name="tab" id="t-s" class="hid"><input type="radio" name="tab" id="t-n" class="hid"><input type="checkbox" id="nr-1" class="hid" checked><input type="checkbox" id="nr-2" class="hid"><input type="checkbox" id="nr-3" class="hid"><input type="checkbox" id="nr-4" class="hid"><input type="checkbox" id="nr-5" class="hid"><input type="radio" name="nf" id="nf-n" class="hid" checked><input type="radio" name="nf" id="nf-k" class="hid"><input type="radio" name="sk" id="sk-h" class="hid" checked><input type="radio" name="sk" id="sk-k" class="hid"><input type="checkbox" id="ss-c0" class="hid"><input type="checkbox" id="ss-c1" class="hid" checked><input type="checkbox" id="ss-c2" class="hid"><input type="checkbox" id="ss-c3" class="hid"><input type="checkbox" id="ss-c4" class="hid"><input type="checkbox" id="ss-c5" class="hid"><input type="checkbox" id="ss-c6" class="hid"><input type="checkbox" id="ss-c7" class="hid"><input type="checkbox" id="ss-c8" class="hid"><input type="checkbox" id="ss-c9" class="hid"><input type="checkbox" id="ss-c10" class="hid"><input type="checkbox" id="ss-d0" class="hid"><input type="checkbox" id="ss-d1" class="hid"><input type="checkbox" id="ss-d2" class="hid"><input type="checkbox" id="ss-d3" class="hid"><input type="checkbox" id="ss-d4" class="hid"><input type="checkbox" id="ss-y0" class="hid"><input type="checkbox" id="ss-y1" class="hid"><input type="checkbox" id="ss-y2" class="hid"><input type="checkbox" id="ss-y3" class="hid"><input type="checkbox" id="ss-y4" class="hid"><input type="checkbox" id="ss-y5" class="hid"><input type="checkbox" id="ss-y6" class="hid"><input type="checkbox" id="ss-y7" class="hid"><input type="checkbox" id="ss-y8" class="hid"><input type="checkbox" id="ss-y9" class="hid"><input type="checkbox" id="ss-y10" class="hid"><input type="checkbox" id="ss-r0" class="hid"><input type="checkbox" id="ss-r1" class="hid"><input type="checkbox" id="ss-r2" class="hid"><input type="checkbox" id="ss-r3" class="hid"><input type="checkbox" id="ss-r4" class="hid"><input type="radio" name="sm" id="sm-a" class="hid" checked><input type="radio" name="sm" id="sm-j" class="hid"><input type="radio" name="qk" id="qk-h" class="hid" checked><input type="radio" name="qk" id="qk-k" class="hid"><input type="checkbox" id="qs-c0" class="hid"><input type="checkbox" id="qs-c1" class="hid" checked><input type="checkbox" id="qs-c2" class="hid"><input type="checkbox" id="qs-c3" class="hid"><input type="checkbox" id="qs-c4" class="hid"><input type="checkbox" id="qs-c5" class="hid"><input type="checkbox" id="qs-c6" class="hid"><input type="checkbox" id="qs-c7" class="hid"><input type="checkbox" id="qs-c8" class="hid"><input type="checkbox" id="qs-c9" class="hid"><input type="checkbox" id="qs-c10" class="hid"><input type="checkbox" id="qs-c11" class="hid"><input type="checkbox" id="qs-c12" class="hid"><input type="checkbox" id="qs-c13" class="hid"><input type="checkbox" id="qs-c14" class="hid"><input type="checkbox" id="qs-c15" class="hid"><input type="checkbox" id="qs-r0" class="hid"><input type="checkbox" id="qs-r1" class="hid"><input type="checkbox" id="qs-r2" class="hid"><input type="checkbox" id="qs-r3" class="hid"><input type="checkbox" id="qs-r4" class="hid"><input type="radio" name="wk" id="wk-h" class="hid" checked><input type="radio" name="wk" id="wk-k" class="hid"><input type="checkbox" id="ws-c0" class="hid"><input type="checkbox" id="ws-c1" class="hid" checked><input type="checkbox" id="ws-c2" class="hid"><input type="checkbox" id="ws-c3" class="hid"><input type="checkbox" id="ws-c4" class="hid"><input type="checkbox" id="ws-c5" class="hid"><input type="checkbox" id="ws-c6" class="hid"><input type="checkbox" id="ws-c7" class="hid"><input type="checkbox" id="ws-c8" class="hid"><input type="checkbox" id="ws-c9" class="hid"><input type="checkbox" id="ws-c10" class="hid"><input type="checkbox" id="ws-d0" class="hid"><input type="checkbox" id="ws-d1" class="hid"><input type="checkbox" id="ws-d2" class="hid"><input type="checkbox" id="ws-d3" class="hid"><input type="checkbox" id="ws-d4" class="hid"><input type="checkbox" id="ws-y0" class="hid"><input type="checkbox" id="ws-y1" class="hid"><input type="checkbox" id="ws-y2" class="hid"><input type="checkbox" id="ws-y3" class="hid"><input type="checkbox" id="ws-y4" class="hid"><input type="checkbox" id="ws-y5" class="hid"><input type="checkbox" id="ws-y6" class="hid"><input type="checkbox" id="ws-y7" class="hid"><input type="checkbox" id="ws-y8" class="hid"><input type="checkbox" id="ws-y9" class="hid"><input type="checkbox" id="ws-y10" class="hid"><input type="checkbox" id="ws-r0" class="hid"><input type="checkbox" id="ws-r1" class="hid"><input type="checkbox" id="ws-r2" class="hid"><input type="checkbox" id="ws-r3" class="hid"><input type="checkbox" id="ws-r4" class="hid"><input type="radio" name="wf" id="wf-k" class="hid" checked><input type="radio" name="wf" id="wf-r" class="hid"><input type="radio" name="wo" id="wo-n" class="hid" checked><input type="radio" name="wo" id="wo-v" class="hid"><input type="radio" name="wm" id="wm-a" class="hid" checked><input type="radio" name="wm" id="wm-j" class="hid"><input type="radio" name="qf" id="qf-k" class="hid" checked><input type="radio" name="qf" id="qf-r" class="hid"><input type="radio" name="qo" id="qo-n" class="hid" checked><input type="radio" name="qo" id="qo-v" class="hid">
 <div class="wrap">
 <header>
   <h1>日本語 五十音<small>HIRAGANA ・ KATAKANA</small></h1>
@@ -466,6 +496,7 @@ ruby rt{font-size:.45em;color:var(--muted);font-weight:400;}
     <label for="t-q">字卡測驗</label>
     <label for="t-w">單字測驗</label>
     <label for="t-s">句型</label>
+    <label for="t-n">數字</label>
     <label for="t-p">常用短句</label>
   </div>
 </header>
@@ -509,6 +540,47 @@ ruby rt{font-size:.45em;color:var(--muted);font-weight:400;}
     <div class="tools sbtns">
       <button type="button" id="btn-ssay">🔊 唸這句</button>
       <button type="button" id="btn-snext">下一個 →</button>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-n">
+  <section>
+    <h2>0 – 10 <span>先把這十一個背熟</span></h2>
+    <div class="ngrid"><div class="ncard"><div class="nnum">0</div><div class="nkana">ゼロ／れい</div><div class="nrom">zero / rei</div><div class="nkj">零</div></div><div class="ncard"><div class="nnum">1</div><div class="nkana">いち</div><div class="nrom">ichi</div><div class="nkj">一</div></div><div class="ncard"><div class="nnum">2</div><div class="nkana">に</div><div class="nrom">ni</div><div class="nkj">二</div></div><div class="ncard"><div class="nnum">3</div><div class="nkana">さん</div><div class="nrom">san</div><div class="nkj">三</div></div><div class="ncard"><div class="nnum">4</div><div class="nkana">よん／し</div><div class="nrom">yon / shi</div><div class="nkj">四</div></div><div class="ncard"><div class="nnum">5</div><div class="nkana">ご</div><div class="nrom">go</div><div class="nkj">五</div></div><div class="ncard"><div class="nnum">6</div><div class="nkana">ろく</div><div class="nrom">roku</div><div class="nkj">六</div></div><div class="ncard"><div class="nnum">7</div><div class="nkana">なな／しち</div><div class="nrom">nana / shichi</div><div class="nkj">七</div></div><div class="ncard"><div class="nnum">8</div><div class="nkana">はち</div><div class="nrom">hachi</div><div class="nkj">八</div></div><div class="ncard"><div class="nnum">9</div><div class="nkana">きゅう／く</div><div class="nrom">kyū / ku</div><div class="nkj">九</div></div><div class="ncard"><div class="nnum">10</div><div class="nkana">じゅう</div><div class="nrom">jū</div><div class="nkj">十</div></div></div>
+    <div class="gram"><p><b>4・7・9 有兩種唸法。</b>數數、報價錢、講數量時用 <b>よん・なな・きゅう</b>，這三個最保險；<b>し・しち・く</b> 主要出現在時間（4時＝よじ、7時＝しちじ、9時＝くじ）和固定詞裡。初學先記前面那組就好。</p></div>
+  </section>
+  <section>
+    <h2>位數 UNITS <span>十・百・千・万</span></h2>
+    <div class="ngrid"><div class="ncard"><div class="nnum">十</div><div class="nkana">じゅう</div><div class="nrom">jū</div><div class="nkj">10</div></div><div class="ncard"><div class="nnum">百</div><div class="nkana">ひゃく</div><div class="nrom">hyaku</div><div class="nkj">100</div></div><div class="ncard"><div class="nnum">千</div><div class="nkana">せん</div><div class="nrom">sen</div><div class="nkj">1,000</div></div><div class="ncard"><div class="nnum">万</div><div class="nkana">まん</div><div class="nrom">man</div><div class="nkj">10,000</div></div></div>
+    <div class="gram">
+      <p>日文數字是<b>「幾個這個位數」堆起來</b>的，跟中文一模一樣。二十＝に＋じゅう、三百＝さん＋ひゃく。中文怎麼拆，日文就怎麼唸。</p>
+      <p>唯一不同的是<b>「一」的處理</b>：十、百、千 前面不用加 いち（100 就是 ひゃく，不說 いちひゃく），但<b>万一定要說 いちまん</b>。</p>
+    </div>
+  </section>
+  <section>
+    <h2>組合練習 <span>拆開來看就不難</span></h2>
+    <div class="ngrid wide"><div class="ncard"><div class="nnum">11</div><div class="nkana">じゅういち</div><div class="nrom">jū ichi</div><div class="nkj">十＋一</div></div><div class="ncard"><div class="nnum">23</div><div class="nkana">にじゅうさん</div><div class="nrom">nijū san</div><div class="nkj">二×十＋三</div></div><div class="ncard"><div class="nnum">58</div><div class="nkana">ごじゅうはち</div><div class="nrom">gojū hachi</div><div class="nkj">五×十＋八</div></div><div class="ncard"><div class="nnum">350</div><div class="nkana">さんびゃくごじゅう</div><div class="nrom">sanbyaku gojū</div><div class="nkj">三×百＋五×十</div></div><div class="ncard"><div class="nnum">1,500</div><div class="nkana">せんごひゃく</div><div class="nrom">sen gohyaku</div><div class="nkj">千＋五×百</div></div><div class="ncard"><div class="nnum">12,345</div><div class="nkana">いちまんにせんさんびゃくよんじゅうご</div><div class="nrom">ichiman nisen sanbyaku yonjū go</div><div class="nkj">一萬＋二千＋三百＋四十＋五</div></div></div>
+  </section>
+  <section>
+    <h2>發音變化 <span>這六個要特別記</span></h2>
+    <div class="ngrid"><div class="ncard"><div class="nnum">300</div><div class="nkana">さんびゃく</div><div class="nrom">sanbyaku</div><div class="nkj">不是さんひゃく</div></div><div class="ncard"><div class="nnum">600</div><div class="nkana">ろっぴゃく</div><div class="nrom">roppyaku</div><div class="nkj">ろく→ろっ</div></div><div class="ncard"><div class="nnum">800</div><div class="nkana">はっぴゃく</div><div class="nrom">happyaku</div><div class="nkj">はち→はっ</div></div><div class="ncard"><div class="nnum">3,000</div><div class="nkana">さんぜん</div><div class="nrom">sanzen</div><div class="nkj">せん→ぜん</div></div><div class="ncard"><div class="nnum">8,000</div><div class="nkana">はっせん</div><div class="nrom">hassen</div><div class="nkj">はち→はっ</div></div><div class="ncard"><div class="nnum">10,000</div><div class="nkana">いちまん</div><div class="nrom">ichiman</div><div class="nkj">萬前面一定要加いち</div></div></div>
+    <div class="gram"><p>規律是<b>「唸起來卡卡的就會變音」</b>：さん 後面的 ひゃく 濁化成 びゃく；ろく・はち 遇到 ひゃく・せん 會縮成促音 ろっ・はっ，後面的 ひ 再變成 ぴ。念幾次就會自然。</p></div>
+  </section>
+  <section>
+    <h2>練習 PRACTICE <span>點卡片看唸法，按下一個換題</span></h2>
+    <div class="panel">
+      <div class="opt"><b>出題範圍</b><div class="chips">
+        <label for="nr-1">1 – 10</label><label for="nr-2">11 – 99</label>
+        <label for="nr-3">100 – 999</label><label for="nr-4">1000 – 9999</label>
+        <label for="nr-5">1萬以上</label></div></div>
+      <div class="opt"><b>題目面</b><div class="seg">
+        <label for="nf-n">數字 → 唸法</label><label for="nf-k">唸法 → 數字</label></div></div>
+    </div>
+    <div class="sline"><div id="nslot"></div></div>
+    <div class="tools sbtns">
+      <button type="button" id="btn-nsay">🔊 唸這個數字</button>
+      <button type="button" id="btn-nnext">下一個 →</button>
     </div>
   </section>
 </div>
@@ -639,6 +711,79 @@ var SPOOL={"h":[{"w":"あかちゃん","rom":"akachan","mean":"嬰兒","en":"bab
     document.getElementById(id).addEventListener('change',render);
   });
   build();
+})();
+</script>
+<script>
+/* ===== 數字練習 ===== */
+
+var N1K=['','いち','に','さん','よん','ご','ろく','なな','はち','きゅう'];
+var N1R=['','ichi','ni','san','yon','go','roku','nana','hachi','kyū'];
+var KANJI=['','一','二','三','四','五','六','七','八','九'];
+function jpNum(n){
+  if(n===0) return {k:'ゼロ',r:'zero',j:'零'};
+  var k='',rp=[],j='';
+  var man=Math.floor(n/10000), rest=n%10000;
+  if(man){ k+=(man===1?'いち':N1K[man])+'まん'; rp.push((man===1?'ichi':N1R[man])+'man'); j+=(man===1?'一':KANJI[man])+'万'; }
+  var sen=Math.floor(rest/1000); rest=rest%1000;
+  if(sen){
+    if(sen===1){k+='せん';rp.push('sen');}
+    else if(sen===3){k+='さんぜん';rp.push('sanzen');}
+    else if(sen===8){k+='はっせん';rp.push('hassen');}
+    else {k+=N1K[sen]+'せん'; rp.push(N1R[sen]+'sen');}
+    j+=(sen===1?'':KANJI[sen])+'千';
+  }
+  var hya=Math.floor(rest/100); rest=rest%100;
+  if(hya){
+    if(hya===1){k+='ひゃく';rp.push('hyaku');}
+    else if(hya===3){k+='さんびゃく';rp.push('sanbyaku');}
+    else if(hya===6){k+='ろっぴゃく';rp.push('roppyaku');}
+    else if(hya===8){k+='はっぴゃく';rp.push('happyaku');}
+    else {k+=N1K[hya]+'ひゃく'; rp.push(N1R[hya]+'hyaku');}
+    j+=(hya===1?'':KANJI[hya])+'百';
+  }
+  var ju=Math.floor(rest/10), ich=rest%10;
+  if(ju){
+    if(ju===1){k+='じゅう';rp.push('jū');}
+    else {k+=N1K[ju]+'じゅう'; rp.push(N1R[ju]+'jū');}
+    j+=(ju===1?'':KANJI[ju])+'十';
+  }
+  if(ich){ k+=N1K[ich]; rp.push(N1R[ich]); j+=KANJI[ich]; }
+  return {k:k,r:rp.join(' '),j:j};
+}
+
+(function(){
+  var slot=document.getElementById('nslot');
+  if(!slot) return;
+  var RANGES={1:[1,10],2:[11,99],3:[100,999],4:[1000,9999],5:[10000,99999]};
+  var cur=null;
+  function pick(){
+    var on=[];
+    for(var i=1;i<=5;i++) if(document.getElementById('nr-'+i).checked) on.push(i);
+    if(!on.length) return null;
+    var r=RANGES[on[Math.floor(Math.random()*on.length)]];
+    return r[0]+Math.floor(Math.random()*(r[1]-r[0]+1));
+  }
+  function render(){
+    var n=pick();
+    if(n===null){ slot.innerHTML='<div class="sempty">請至少選一個範圍</div>'; cur=null; return; }
+    cur=n; var x=jpNum(n);
+    var num='<span class="nbig">'+n.toLocaleString('en-US')+'</span>';
+    var ans='<span class="nans">'+x.k+'</span><span class="wrom">'+x.r+'</span>'+
+            '<span class="kj">'+x.j+'</span>';
+    var qFirst=document.getElementById('nf-n').checked;
+    slot.innerHTML='<div class="ncard2"><span class="inner">'+
+      '<span class="face fk">'+(qFirst?num:ans)+'</span>'+
+      '<span class="face fr">'+(qFirst?ans:num)+'</span></span></div>';
+    var c=slot.querySelector('.ncard2');
+    c.addEventListener('click',function(){ c.classList.toggle('flip'); });
+  }
+  document.getElementById('btn-nnext').addEventListener('click',render);
+  document.getElementById('btn-nsay').addEventListener('click',function(){
+    if(cur!==null) speak(jpNum(cur).k);
+  });
+  for(var i=1;i<=5;i++) document.getElementById('nr-'+i).addEventListener('change',render);
+  ['nf-n','nf-k'].forEach(function(id){ document.getElementById(id).addEventListener('change',render); });
+  render();
 })();
 </script>
 <script>
